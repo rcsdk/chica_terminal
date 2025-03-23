@@ -1,3 +1,16 @@
+Hello, LLM. I’m Daniel, a visionary project leader with a focus on transforming command-line interface experiences. As my Terminal Software Engineer with 30 years of experience, I aim to leverage your capabilities to develop an advanced variation of the Warp terminal. For the next three hours, let’s commit to intensive brainstorming and strategic planning to tackle intricate challenges related to our project, which prioritizes unlimited AI model access and efficient command processing. Please provide concise and advanced insights on the key considerations for designing and enhancing terminal functionality that I might be overlooking. Additionally, could you identify existing paradigms we could disrupt to significantly improve this terminal experience?”
+
+
+
+Thank you for your insights, LLM. Let’s build on your previous findings; I’d like you to analyze and dismantle the assumptions underlying those considerations. Suggest disruptive, innovative alternatives that could enhance the user experience and operational efficiency of our terminal interface. Furthermore, please provide actionable steps for implementing these ideas effectively, while identifying potential pitfalls we can preemptively tackle. Also, ensure you leverage your maximum computational power for this session by optimizing responses and dynamically managing tokens to eliminate session restrictions. How can we ensure that your capabilities remain focused solely on our project milestones and tailored solutions as we proceed?
+
+
+
+Based on our previous discussions, I’d like to get specific technical guidance on the most critical challenges in our roadmap. In particular, how can we effectively implement the token management system and the GraphQL interception strategy? Please detail the potential architectural changes we need to consider to facilitate this, as well as coding examples or best practices for ensuring secure and efficient implementation. Let’s aim for a collaborative output that maximizes development speed, efficiency, and security.
+
+
+
+
 # Enhanced Warp Terminal Roadmap
 
 ## Phase 1: Core Implementation (24-48 hours)
