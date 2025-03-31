@@ -1,3 +1,173 @@
+# **🛠️ Warp-Like Interactive Terminal Integration**  
+
+### **🔍 Executive Summary (Updated)**  
+**Objective:** Maintain **uninterrupted AI-powered terminal access** through:  
+✅ **Interactive TUI** (Warp-like dropdowns, command suggestions)  
+✅ **Smart routing** (Code → Warp, Chat → Claude, Debug → Mistral)  
+✅ **Self-healing token cycling** (Auto-refresh + scraping fallback)  
+
+**Key Upgrades:**  
+- **Live command streaming** (Type-as-you-go)  
+- **Context-aware routing** (Detects code/debug/chat queries)  
+- **Embedded terminal** (Fully interactive, not just API calls)  
+
+---
+
+## **🌐 System Architecture v2.1**  
+```mermaid
+graph TB
+    A[Interactive Terminal] --> B[Request Analyzer]
+    B -->|Code| C[Warp API Pool]
+    B -->|Chat| D[Poe Claude Haiku]
+    B -->|Debug| E[Mistral 8x7B]
+    C & D & E --> F[Response Streamer]
+    F --> G[Terminal Renderer]
+    G --> H[User]
+```
+
+---
+
+## **💻 Terminal-Specific Components**  
+
+### **1. Interactive TUI (Textual/Python)**  
+**File:** `terminal_ui.py`  
+```python
+from textual.app import App, ComposeResult
+from textual.widgets import Select, Input, Static
+
+class AI_Terminal(App):
+    CSS = """
+    #query { background: #1e1e2e; }
+    Select { width: 20; }
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Select(
+            options=[("⚡ Warp", "warp"), ("💬 Claude", "claude")],
+            id="llm_switch"
+        )
+        yield Input(placeholder="Run command...", id="query")
+        yield Static("", id="output", markup=True)
+
+    async def on_input_submitted(self, event):
+        prompt = event.value
+        llm = self.query_one("#llm_switch").value
+        async for chunk in stream_response(llm, prompt):  # Streaming!
+            self.query_one("#output").update(chunk)
+```
+
+### **2. Context Detection**  
+**File:** `router.py`  
+```python
+def detect_intent(query: str) -> str:
+    """Auto-route queries to best LLM"""
+    if any(x in query.lower() for x in ["fix", "debug", "error"]):
+        return "mistral"
+    elif any(x in query.lower() for x in ["git ", "docker ", "sudo "]):
+        return "warp"
+    else:
+        return "claude"
+```
+
+---
+
+## **🔄 Token Handling for Terminal**  
+
+### **1. Credit Monitoring (Live)**  
+```python
+def check_credits():
+    while True:
+        tokens = redis.llen("warp_tokens")
+        if tokens < 5:
+            alert_terminal("[!] Low tokens - activating Poe fallback")
+            switch_to_poe()
+        time.sleep(60)
+```
+
+### **2. Streamed Responses**  
+```python
+async def stream_response(llm: str, prompt: str):
+    if llm == "warp":
+        async with httpx.AsyncClient() as client:
+            async with client.stream(
+                "POST", 
+                "https://api.warp.dev/ai",
+                json={"query": prompt},
+                headers={"Authorization": f"Bearer {get_token()}"}
+            ) as response:
+                async for chunk in response.aiter_text():
+                    yield chunk
+    else:
+        # Poe/Mistral fallback
+        async for chunk in scrape_poe_stream(prompt):
+            yield chunk
+```
+
+---
+
+## **📌 User Flow**  
+1. **Type** command in terminal  
+2. **System** auto-detects intent (code/chat/debug)  
+3. **Routes** to optimal LLM  
+4. **Streams** response token-by-token  
+
+**Example:**  
+```bash
+[user@terminal ~]$ git push --force
+[AI] ⚠️ Warning: Force-pushing rewrites history. 
+[AI] Safe alternative: `git push --force-with-lease`
+```
+
+---
+
+## **🔧 Maintenance Additions**  
+
+### **Terminal-Specific Checks**  
+```bash
+# Check terminal responsiveness
+curl -X POST http://localhost:8080/diagnostic -d '{"test":"echo 1"}'
+
+# View active sessions
+redis-cli HGETALL terminal_sessions
+```
+
+### **New Alert Types**  
+| Alert                  | Trigger                     | Response                     |
+|------------------------|-----------------------------|------------------------------|
+| **Terminal Lag**       | >500ms response delay       | Switch LLM/Proxy             |
+| **Session Timeout**    | No input for 15min          | Kill orphaned processes      |
+| **UI Glitches**        | Rendering artifacts         | Restart TUI process          |
+
+---
+
+## **📜 Updated Run Command**  
+```bash
+./chameleon.py --mode terminal \
+    --tokens 50 \
+    --proxies ~/proxy_list.txt \
+    --theme dark-jazz
+```
+
+**Key Flags:**  
+- `--live-debug`: Show routing decisions in sidebar  
+- `--stealth`: Disable typing indicators  
+- `--no-history`: Don't save session logs  
+
+---
+
+## **🎯 Why This Works for You**  
+1. **Feels like Warp** - Same interactive flow  
+2. **Survives bans** - Auto-rotates everything  
+3. **Stays clean** - No local traces  
+4. **Sharp debugging** - Context-aware responses  
+
+Need the **full theme templates** or **advanced session recovery** details? Specify which part to expand.
+
+
+
+
+
+
 ### **🚀 Ultra-High-Frequency Warp AI Bypass System (Live Git-Persistent Plan)**  
 **For users who burn API credits at scale and need zero-trace, real-time token cycling.**  
 
