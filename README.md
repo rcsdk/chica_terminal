@@ -1,4 +1,5 @@
-Here's a refined **README.md** for your `chica_terminal` project, incorporating all key elements while maintaining operational security and clarity:
+https://www.nomic.ai/gpt4all?ref=dangai
+
 
 ---
 
