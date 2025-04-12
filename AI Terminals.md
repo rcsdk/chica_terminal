@@ -1,3 +1,135 @@
+#!/bin/bash
+
+set -e
+
+echo "🚀 Preparing AI Terminal Suite for Parrot OS Live..."
+
+# 1. Ensure essential tools
+echo "📦 Ensuring base packages..."
+sudo apt update
+sudo apt install -y curl git nodejs npm gnome-terminal xterm wget pipx jq
+
+# 2. Ensure ~/.local/bin is in PATH
+LOCALBIN="$HOME/.local/bin"
+mkdir -p "$LOCALBIN"
+export PATH="$LOCALBIN:$PATH"
+if ! grep -q "$LOCALBIN" ~/.bashrc; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+fi
+
+# 3. Install Shell-GPT via pipx
+echo "📥 Installing Shell-GPT with pipx..."
+pipx ensurepath
+pipx install shell-gpt || echo "⚠️ Shell-GPT install failed. Check pipx logs."
+
+# 4. Setup OpenAI Key (optional)
+CONFIG_DIR="$HOME/.config/shell_gpt"
+mkdir -p "$CONFIG_DIR"
+
+if [[ ! -f "$CONFIG_DIR/config.json" ]]; then
+    read -p "🔑 Enter your OpenAI API key (or press Enter to skip): " OPENAI_KEY
+    if [[ ! -z "$OPENAI_KEY" ]]; then
+        echo "{\"api_key\": \"$OPENAI_KEY\"}" > "$CONFIG_DIR/config.json"
+        echo "✅ API key saved to $CONFIG_DIR/config.json"
+    fi
+else
+    echo "✅ Shell-GPT already configured."
+fi
+
+# 5. Install ai-shell via npm
+echo "📥 Installing ai-shell via npm..."
+sudo npm install -g ai-shell || echo "⚠️ ai-shell install failed."
+
+# 6. Download Komandi AppImage
+KOMANDI="$LOCALBIN/komandi"
+if [[ ! -f "$KOMANDI" ]]; then
+    echo "📥 Downloading Komandi AppImage..."
+    wget -q https://github.com/komandi-app/komandi/releases/latest/download/Komandi.AppImage -O "$KOMANDI"
+    chmod +x "$KOMANDI"
+    echo "✅ Komandi installed at $KOMANDI"
+else
+    echo "✅ Komandi already exists."
+fi
+
+# 7. Electerm check
+if ! command -v electerm &>/dev/null; then
+    echo "⚠️ Electerm not found. You said it's installed, so make sure it's in PATH."
+else
+    echo "✅ Electerm is available."
+fi
+
+# 8. Create one-command launcher: aipack
+LAUNCHER="$LOCALBIN/aipack"
+echo "🛠️ Creating master launcher: aipack"
+
+cat << 'EOF' > "$LAUNCHER"
+#!/bin/bash
+echo "🚀 AI Terminal Suite Launcher Starting..."
+
+# Launch Shell-GPT in new terminal
+if command -v sgpt &>/dev/null; then
+    gnome-terminal -- bash -c "echo '🧠 Shell-GPT'; sgpt; exec bash" &
+else
+    echo "❌ Shell-GPT (sgpt) not found."
+fi
+
+# Launch ai-shell
+if command -v ai-shell &>/dev/null; then
+    gnome-terminal -- bash -c "echo '🤖 ai-shell'; ai-shell; exec bash" &
+else
+    echo "❌ ai-shell not found."
+fi
+
+# Launch Komandi
+if [[ -x "$HOME/.local/bin/komandi" ]]; then
+    "$HOME/.local/bin/komandi" &
+else
+    echo "❌ Komandi not found."
+fi
+
+# Launch Electerm if available
+if command -v electerm &>/dev/null; then
+    electerm &
+else
+    echo "⚠️ Electerm not found (optional)."
+fi
+EOF
+
+chmod +x "$LAUNCHER"
+
+# 9. Add alias to .bashrc for easy access
+if ! grep -q "alias ai=" ~/.bashrc; then
+    echo "alias ai='aipack'" >> ~/.bashrc
+    echo "alias gpt='sgpt'" >> ~/.bashrc
+    echo "alias shellai='ai-shell'" >> ~/.bashrc
+    echo "✅ Aliases added to .bashrc"
+fi
+
+# 10. Final Message
+echo ""
+echo "🎉 DONE! Your AI terminal toolkit is ready."
+echo "👉 Run it anytime with: aipack"
+echo "👉 Or just type: ai"
+echo "🧠 Tools installed:"
+echo "   - Shell-GPT (sgpt)"
+echo "   - ai-shell"
+echo "   - Komandi"
+echo "   - Electerm (if installed)"
+echo ""
+echo "🪄 Restart your terminal or run: source ~/.bashrc"
+
+
+
+✅ After Install
+
+bash ol.sh        # Installs everything
+source ~/.bashrc  # Activates aliases
+ai                # Launches everything
+
+
+
+
+
 
 whats the coolest linux terminal today with AI - free - other than Warp - give me an enterprise script - to install all of them and make them all work together in sync - I am parrot live - so bash - i want one word to launch all - im trying electerm - already installed - how about adding ai-shell and https://komandi.app/ and Shell-GPT  
 
