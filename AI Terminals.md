@@ -1,5 +1,5 @@
 
-
+whats the coolest linux terminal today with AI - free - other than Warp - give me an enterprise script - to install all of them and make them all work together in sync - I am parrot live - so bash - i want one word to launch all - im trying electerm - already installed - how about adding ai-shell and https://komandi.app/ and Shell-GPT  
 
 
 https://electerm.github.io/electerm
